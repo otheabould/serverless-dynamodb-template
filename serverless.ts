@@ -6,6 +6,7 @@ const serverlessConfiguration: AWS = {
   service: 'serverless-template',
   frameworkVersion: '3',
   plugins: ['serverless-esbuild'],
+
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -20,7 +21,9 @@ const serverlessConfiguration: AWS = {
   },
   // import the function via paths
   functions: { hello },
+
   package: { individually: true },
+  
   custom: {
     esbuild: {
       bundle: true,
