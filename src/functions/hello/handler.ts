@@ -1,8 +1,8 @@
+import { middyfy } from "@common/lambda";
 import {
   formatJSONResponse,
   ValidatedEventAPIGatewayProxyEvent,
 } from "@common/apiGateway";
-import { middyfy } from "@common/lambda";
 
 import schema from "./schema";
 
