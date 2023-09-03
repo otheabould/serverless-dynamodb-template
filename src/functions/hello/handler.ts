@@ -1,10 +1,11 @@
-import { middyfy } from "@common/lambda";
+import { middyfy } from "@utils/lambda";
 import {
   apiResponses,
   ValidatedEventAPIGatewayProxyEvent,
-} from "@common/apiGateway";
+} from "@utils/apiGateway";
 
 import schema from "./schema";
+
 const handler: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event,
 ) => {
