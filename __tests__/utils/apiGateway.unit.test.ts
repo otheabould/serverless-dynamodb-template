@@ -10,4 +10,49 @@ describe("apiResponses", () => {
       expect(actual["Content-Type"]).toBe("application/json");
     });
   });
+
+  describe("_200", () => {
+    it("should serialize the response body", () => {
+      const response = apiResponses._200({ message: "hello" });
+      const actual = response.body;
+
+      expect(actual).toBe('{"message":"hello"}');
+    });
+  });
+
+  describe("_400", () => {
+    it("should serialize the response body", () => {
+      const response = apiResponses._400("hello");
+      const actual = response.body;
+
+      expect(actual).toBe('{"message":"hello"}');
+    });
+  });
+
+  describe("_404", () => {
+    it("should serialize the response body", () => {
+      const response = apiResponses._404("hello");
+      const actual = response.body;
+
+      expect(actual).toBe('{"message":"hello"}');
+    });
+  });
+
+  describe("_409", () => {
+    it("should serialize the response body", () => {
+      const response = apiResponses._409("hello");
+      const actual = response.body;
+
+      expect(actual).toBe('{"message":"hello"}');
+    });
+  });
+
+  describe("_500", () => {
+    it("should serialize the response body", () => {
+      const response = apiResponses._500("hello");
+      const actual = response.body;
+
+      expect(actual).toBe('{"message":"hello"}');
+    });
+  });
 });

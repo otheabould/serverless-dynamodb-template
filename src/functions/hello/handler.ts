@@ -11,7 +11,6 @@ const handler: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 ) => {
   return apiResponses._200({
     message: `Hello ${event.body.name}, welcome to the exciting Serverless world!`,
-    event,
   });
 };
 
