@@ -11,11 +11,13 @@ const logger = (file: string) => {
     );
   }
 
-  return (...args: unknown[]) => {
+  const log = (...args: unknown[]) => {
     if (!isTest) {
       console.log(`[${fileName}]`, ...args);
     }
   };
+
+  return log;
 };
 
 export default logger;
