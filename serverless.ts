@@ -9,7 +9,11 @@ const serverlessConfiguration: AWS = {
 
   provider: {
     name: "aws",
+    stage: "${opt:stage, 'dev'}",
     runtime: "nodejs14.x",
+    region: "eu-west-1",
+    logRetentionInDays: 60,
+
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -17,23 +21,24 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
+
+      tableName: "${param:dynamodbTable}",
+      region: "${self:provider.region}",
     },
   },
   // import the function via paths
   functions: { hello },
 
-  package: {
-    individually: true,
-    patterns: [
-      // include
-      "src/**",
-      // exclude
-      "!*",
-      "!__tests__/**",
-      "!documentation/**",
-      "!config/**",
-      "!jestConfig/**",
-    ],
+  params: {
+    default: {
+      dynamodbTable: "${self:service}-${self:provider.stage}",
+      dynamodbArn: {
+        "Fn::GetAtt": ["DynamoDb", "Arn"],
+      },
+      dynamodbStreamArn: {
+        "Fn::GetAtt": ["DynamoDb", "StreamArn"],
+      },
+    },
   },
 
   custom: {
@@ -51,6 +56,44 @@ const serverlessConfiguration: AWS = {
     "export-env": {
       filename: ".env.test",
       overwrite: true,
+    },
+  },
+
+  package: {
+    individually: true,
+    patterns: [
+      // include
+      "src/**",
+      // exclude
+      "!*",
+      "!__tests__/**",
+      "!documentation/**",
+      "!config/**",
+      "!jestConfig/**",
+    ],
+  },
+
+  resources: {
+    Resources: {
+      DynamoDb: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          TableName: "${param:dynamodbTable}",
+          AttributeDefinitions: [
+            {
+              AttributeName: "PK",
+              AttributeType: "S",
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: "PK",
+              KeyType: "HASH",
+            },
+          ],
+          BillingMode: "PAY_PER_REQUEST",
+        },
+      },
     },
   },
 };
