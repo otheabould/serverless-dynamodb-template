@@ -5,7 +5,7 @@ import hello from "@functions/hello";
 const serverlessConfiguration: AWS = {
   service: "serverless-template",
   frameworkVersion: "3",
-  plugins: ["serverless-esbuild"],
+  plugins: ["serverless-esbuild", "serverless-export-env"],
 
   provider: {
     name: "aws",
@@ -22,7 +22,19 @@ const serverlessConfiguration: AWS = {
   // import the function via paths
   functions: { hello },
 
-  package: { individually: true },
+  package: {
+    individually: true,
+    patterns: [
+      // include
+      "src/**",
+      // exclude
+      "!*",
+      "!__tests__/**",
+      "!documentation/**",
+      "!config/**",
+      "!jestConfig/**",
+    ],
+  },
 
   custom: {
     esbuild: {
@@ -34,6 +46,11 @@ const serverlessConfiguration: AWS = {
       define: { "require.resolve": undefined },
       platform: "node",
       concurrency: 10,
+    },
+
+    "export-env": {
+      filename: ".env.test",
+      overwrite: true,
     },
   },
 };
