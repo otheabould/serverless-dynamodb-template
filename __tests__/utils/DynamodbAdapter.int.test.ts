@@ -1,4 +1,4 @@
-import DynamodbAdapter from "@utils/DynamoDBAdapter";
+import DynamodbAdapter from "@utils/DynamodbAdapter";
 
 describe("DynamoDB Adapter", () => {
   it("should query by field", async () => {
