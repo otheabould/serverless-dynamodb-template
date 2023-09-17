@@ -1,25 +1,24 @@
-import type { FromSchema } from "json-schema-to-ts";
 import type {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
+  APIGatewayProxyEventV2,
+  APIGatewayProxyStructuredResultV2,
   Handler,
 } from "aws-lambda";
 
-type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, "body"> & {
-  body: FromSchema<S>;
+type ValidatedAPIGatewayProxyEvent<T> = Omit<APIGatewayProxyEventV2, "body"> & {
+  body: T;
 };
 
-export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<
+export type ValidatedHttpApiHandler<S = never> = Handler<
   ValidatedAPIGatewayProxyEvent<S>,
-  APIGatewayProxyResult
+  APIGatewayProxyStructuredResultV2
 >;
 
 export const apiResponses = {
   _DefineResponse(
     statusCode: number,
     data: Record<string, unknown>,
-  ): APIGatewayProxyResult {
-    return {
+  ): APIGatewayProxyStructuredResultV2 {
+    const response: APIGatewayProxyStructuredResultV2 = {
       statusCode: statusCode,
       headers: {
         "Access-Control-Allow-Origin": process.env.ALLOW_ORIGIN || "*",
@@ -28,25 +27,27 @@ export const apiResponses = {
       },
       body: JSON.stringify(data),
     };
+
+    return response;
   },
 
-  _200(data: Record<string, unknown> = {}): APIGatewayProxyResult {
+  _200(data: Record<string, unknown> = {}): APIGatewayProxyStructuredResultV2 {
     return this._DefineResponse(200, data);
   },
 
-  _400(message: string): APIGatewayProxyResult {
+  _400(message: string): APIGatewayProxyStructuredResultV2 {
     return this._DefineResponse(400, { message });
   },
 
-  _404(message: string): APIGatewayProxyResult {
+  _404(message: string): APIGatewayProxyStructuredResultV2 {
     return this._DefineResponse(404, { message });
   },
 
-  _409(message: string): APIGatewayProxyResult {
+  _409(message: string): APIGatewayProxyStructuredResultV2 {
     return this._DefineResponse(409, { message });
   },
 
-  _500(message: string): APIGatewayProxyResult {
+  _500(message: string): APIGatewayProxyStructuredResultV2 {
     return this._DefineResponse(500, { message });
   },
 };

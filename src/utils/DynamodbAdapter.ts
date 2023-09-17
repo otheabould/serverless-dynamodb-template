@@ -1,24 +1,22 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import logger from "@utils/logger";
-
-const log = logger(__filename);
 
 export default class DynamodbAdapter {
   documentClient: DocumentClient;
+  tableName: string;
 
-  constructor() {
+  constructor(region: string, tableName: string) {
+    this.tableName = tableName;
     this.documentClient = new DocumentClient({
-      region: process.env.region,
+      region: region,
     });
   }
 
   async queryByField<T>(
-    TableName: string,
     field: string,
     value: DocumentClient.AttributeValue,
   ): Promise<T[]> {
     const params = {
-      TableName,
+      TableName: this.tableName,
       KeyConditionExpression: "#field = :value",
       ExpressionAttributeNames: {
         "#field": field,
@@ -33,13 +31,12 @@ export default class DynamodbAdapter {
   }
 
   async queryIndexByField<T>(
-    TableName: string,
     IndexName: string,
     field: string,
     value: DocumentClient.AttributeValue,
   ): Promise<T[]> {
     const params = {
-      TableName,
+      TableName: this.tableName,
       IndexName,
       KeyConditionExpression: "#field = :value",
       ExpressionAttributeNames: {
@@ -55,13 +52,12 @@ export default class DynamodbAdapter {
   }
 
   async query<T>(
-    TableName: string,
     KeyConditionExpression: string,
     ExpressionAttributeNames: Record<string, string>,
     ExpressionAttributeValues: Record<string, DocumentClient.AttributeValue>,
   ): Promise<T[]> {
     const params = {
-      TableName,
+      TableName: this.tableName,
       KeyConditionExpression,
       ExpressionAttributeNames,
       ExpressionAttributeValues,
@@ -71,12 +67,9 @@ export default class DynamodbAdapter {
     return Items as T[];
   }
 
-  async get<T>(
-    TableName: string,
-    Key: Record<string, DocumentClient.AttributeValue>,
-  ) {
+  async get<T>(Key: Record<string, DocumentClient.AttributeValue>) {
     const params = {
-      TableName,
+      TableName: this.tableName,
       Key,
     };
 
@@ -84,11 +77,11 @@ export default class DynamodbAdapter {
     return Item as T;
   }
 
-  async create<T>(tableName: string, Item: T): Promise<T> {
+  async create<T>(Item: T): Promise<T> {
     const params = {
+      TableName: this.tableName,
       Item,
       ReturnConsumedCapacity: "TOTAL",
-      TableName: tableName,
     };
 
     await this.documentClient.put(params).promise();
@@ -96,11 +89,10 @@ export default class DynamodbAdapter {
   }
 
   async delete(
-    tableName: string,
     Key: Record<string, DocumentClient.AttributeValue>,
   ): Promise<void> {
     const params = {
-      TableName: tableName,
+      TableName: this.tableName,
       Key,
     };
 
@@ -108,14 +100,13 @@ export default class DynamodbAdapter {
   }
 
   async update(
-    TableName: string,
     Key: Record<string, DocumentClient.AttributeValue>,
     UpdateExpression: string,
     ExpressionAttributeNames: Record<string, string>,
     ExpressionAttributeValues: Record<string, DocumentClient.AttributeValue>,
   ): Promise<void> {
     const params = {
-      TableName,
+      TableName: this.tableName,
       Key,
       UpdateExpression,
       ExpressionAttributeNames,
@@ -124,41 +115,4 @@ export default class DynamodbAdapter {
 
     await this.documentClient.update(params).promise();
   }
-
-  async transactWrite(params: DocumentClient.TransactWriteItemsInput) {
-    return executeTransactWrite({ client: this.documentClient, params });
-  }
 }
-
-// Thanks Alex DeBrie and his DynamoDB Book for this code below
-// Alex: Thanks, Paul Swail! https://github.com/aws/aws-sdk-js/issues/2464#issuecomment-503524701
-const executeTransactWrite = async ({
-  client,
-  params,
-}: {
-  client: DocumentClient;
-  params: DocumentClient.TransactWriteItemsInput;
-}): Promise<DocumentClient.TransactWriteItemsOutput> => {
-  const transactionRequest = client.transactWrite(params);
-  let cancellationReasons;
-
-  transactionRequest.on("extractError", (response) => {
-    try {
-      cancellationReasons = JSON.parse(
-        response.httpResponse.body.toString(),
-      ).CancellationReasons;
-    } catch (err) {
-      // suppress this just in case some types of errors aren't JSON parseable
-      log("Error extracting cancellation error", err);
-    }
-  });
-
-  return new Promise((resolve, reject) => {
-    transactionRequest.send((err, response) => {
-      if (err) {
-        return reject({ ...err, cancellationReasons });
-      }
-      return resolve(response);
-    });
-  });
-};

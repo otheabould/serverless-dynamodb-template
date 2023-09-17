@@ -7,7 +7,9 @@ const sharedConfig: JestConfigWithTsJest = {
   roots: ["./__tests__/"],
   moduleNameMapper: {
     "^@utils/(.*)$": "<rootDir>/src/utils/$1",
-    "^@handlers/(.*)$": "<rootDir>/src/functions/$1",
+    "^@handlers/(.*)$": "<rootDir>/src/handlers/$1",
+    "^@entities/(.*)$": "<rootDir>/src/entities/$1",
+    "^@db/(.*)$": "<rootDir>/src/db/$1",
   },
 };
 

@@ -3,7 +3,9 @@
     "baseUrl": ".",
     "paths": {
       "@handlers/*": ["src/handlers/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@entities/*": ["src/entities/*"],
+      "@db/*": ["src/db/*"]
     }
   }
 }
