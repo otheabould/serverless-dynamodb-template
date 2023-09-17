@@ -1,11 +1,15 @@
 import type { AWS } from "@serverless/typescript";
 
-import hello from "@handlers/hello";
+import createTodo from "@handlers/createTodo";
 
 const serverlessConfiguration: AWS = {
   service: "serverless-template",
   frameworkVersion: "3",
-  plugins: ["serverless-esbuild", "serverless-export-env"],
+  plugins: [
+    "serverless-iam-roles-per-function",
+    "serverless-esbuild",
+    "serverless-export-env",
+  ],
 
   provider: {
     name: "aws",
@@ -22,12 +26,16 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
 
+      // vars for tests
+      httpApiGatewayEndpointId: { Ref: "HttpApi" },
       tableName: "${param:dynamodbTable}",
+      stage: "${self:provider.stage}",
       region: "${self:provider.region}",
+      service: "${self:service}",
     },
   },
   // import the function via paths
-  functions: { hello },
+  functions: { createTodo },
 
   params: {
     default: {
@@ -81,13 +89,13 @@ const serverlessConfiguration: AWS = {
           TableName: "${param:dynamodbTable}",
           AttributeDefinitions: [
             {
-              AttributeName: "PK",
+              AttributeName: "id",
               AttributeType: "S",
             },
           ],
           KeySchema: [
             {
-              AttributeName: "PK",
+              AttributeName: "id",
               KeyType: "HASH",
             },
           ],

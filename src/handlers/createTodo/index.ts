@@ -6,8 +6,15 @@ export default {
     {
       httpApi: {
         method: "POST",
-        path: "/hello",
+        path: "/",
       },
+    },
+  ],
+  iamRoleStatements: [
+    {
+      Effect: "Allow",
+      Action: ["dynamodb:PutItem", "dynamodb:UpdateItem"],
+      Resource: "${param:dynamodbArn}",
     },
   ],
 };

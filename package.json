@@ -15,7 +15,9 @@
     "@middy/core": "^3.4.0",
     "@middy/http-error-handler": "^4.6.0",
     "@middy/http-json-body-parser": "^3.4.0",
-    "@middy/validator": "^4.6.0"
+    "@middy/validator": "^4.6.0",
+    "crypto": "^1.0.1",
+    "ksuid": "^3.0.0"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",
@@ -24,6 +26,7 @@
     "@types/node": "^14.14.25",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
+    "axios": "^1.5.0",
     "esbuild": "^0.14.11",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
@@ -34,6 +37,7 @@
     "serverless": "^3.0.0",
     "serverless-esbuild": "^1.23.3",
     "serverless-export-env": "^2.2.0",
+    "serverless-iam-roles-per-function": "^3.2.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.9.0",
