@@ -49,13 +49,10 @@ describe("createTodo handler", () => {
   });
 
   it("should respond with Not found 404 for an incorrect id", async () => {
-    // GIVEN
-    const wrongPayload = {};
-
     let actual;
     try {
       const fakeID = "sadfasdfasdf";
-      await axios.post(`${baseURL}/${fakeID}`, wrongPayload);
+      await axios.get(`${baseURL}/${fakeID}`);
     } catch (e) {
       actual = e.response;
     }
