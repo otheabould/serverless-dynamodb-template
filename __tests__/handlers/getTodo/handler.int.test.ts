@@ -6,7 +6,7 @@ import axios from "axios";
 
 const baseURL = `https://${process.env.httpApiGatewayEndpointId}.execute-api.${process.env.region}.amazonaws.com`;
 
-describe("createTodo handler", () => {
+describe("getTodo handler", () => {
   it("should respond with statusCode 200 to correct request", async () => {
     const db = new DynamodbAdapter(process.env.region, process.env.tableName);
 
