@@ -1,6 +1,6 @@
 import type { AWS } from "@serverless/typescript";
 
-import createTodo from "@handlers/createTodo";
+import { createTodo, getTodo } from "@handlers/index";
 
 const serverlessConfiguration: AWS = {
   service: "serverless-template",
@@ -35,7 +35,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { createTodo },
+  functions: { createTodo, getTodo },
 
   params: {
     default: {
@@ -52,8 +52,8 @@ const serverlessConfiguration: AWS = {
   custom: {
     esbuild: {
       bundle: true,
-      minify: false,
-      sourcemap: true,
+      minify: true,
+      sourcemap: false,
       exclude: ["aws-sdk"],
       target: "node14",
       define: { "require.resolve": undefined },

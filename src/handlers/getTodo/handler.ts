@@ -7,16 +7,19 @@ import { transpileSchema } from "@middy/validator/transpile";
 import DynamodbAdapter from "@utils/DynamodbAdapter";
 import { apiResponses, ValidatedHttpApiHandler } from "@utils/apiGateway";
 import { newTodoResponse } from "@entities/Todo";
-import createTodo from "@db/createTodo";
 
-import { schema, SchemaBody } from "./schema";
-import { newTodo } from "./factory";
+import { schema } from "./schema";
+import getTodo from "@db/getTodo";
 
-const handler: ValidatedHttpApiHandler<SchemaBody> = async (event) => {
+const handler: ValidatedHttpApiHandler = async (event) => {
+  const { id } = event.pathParameters;
+
   const db = new DynamodbAdapter(process.env.region, process.env.tableName);
 
-  const todo = newTodo(event.body);
-  await createTodo(db, todo);
+  const todo = await getTodo(db, id);
+  if (!todo) {
+    return apiResponses._404("Todo not found.");
+  }
 
   const todoResponse = newTodoResponse(todo);
   return apiResponses._200(todoResponse);

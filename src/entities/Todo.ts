@@ -1,5 +1,3 @@
-import type { FromSchema } from "json-schema-to-ts";
-
 export enum TodoStatus {
   Ready = "Ready",
   InProgress = "InProgress",
@@ -13,21 +11,11 @@ export interface Todo {
   createdAt: number;
 }
 
-export const todoResponseSchema = {
-  type: "object",
-  properties: {
-    id: { type: "string" },
-    title: { type: "string" },
-    name: { type: "string" },
-    status: {
-      enum: [TodoStatus.Ready, TodoStatus.InProgress, TodoStatus.Complete],
-    },
-  },
-  required: ["id", "title", "status"],
-  additionalProperties: false,
-} as const;
-
-export type TodoResponse = FromSchema<typeof todoResponseSchema>;
+export interface TodoResponse {
+  id: string;
+  title: string;
+  status: TodoStatus;
+}
 
 export const newTodoResponse = (todo: Todo): TodoResponse => {
   const response: TodoResponse = {

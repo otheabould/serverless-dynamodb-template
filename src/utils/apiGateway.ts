@@ -31,7 +31,7 @@ export const apiResponses = {
     return response;
   },
 
-  _200(data: Record<string, unknown> = {}): APIGatewayProxyStructuredResultV2 {
+  _200(data: unknown = {}): APIGatewayProxyStructuredResultV2 {
     return this._DefineResponse(200, data);
   },
 
