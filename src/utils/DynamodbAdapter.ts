@@ -99,20 +99,53 @@ export default class DynamodbAdapter {
     await this.documentClient.delete(params).promise();
   }
 
-  async update(
+  async update<T>(
     Key: Record<string, DocumentClient.AttributeValue>,
-    UpdateExpression: string,
-    ExpressionAttributeNames: Record<string, string>,
-    ExpressionAttributeValues: Record<string, DocumentClient.AttributeValue>,
-  ): Promise<void> {
-    const params = {
+    updateVals: Record<string, DocumentClient.AttributeValue>,
+  ): Promise<T> {
+    const {
+      UpdateExpression,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+    } = this._generateUpdateExpression(updateVals);
+
+    const params: DocumentClient.UpdateItemInput = {
       TableName: this.tableName,
       Key,
       UpdateExpression,
       ExpressionAttributeNames,
       ExpressionAttributeValues,
+      ReturnValues: "ALL_NEW",
     };
 
-    await this.documentClient.update(params).promise();
+    const { Attributes } = await this.documentClient.update(params).promise();
+    return Attributes as T;
+  }
+
+  _generateUpdateExpression(
+    updateVals: Record<string, DocumentClient.AttributeValue>,
+  ): {
+    UpdateExpression: string;
+    ExpressionAttributeNames: Record<string, string>;
+    ExpressionAttributeValues: Record<string, DocumentClient.AttributeValue>;
+  } {
+    let expression = "SET ";
+    const attributeNames: Record<string, string> = {};
+    const attibuteValues: Record<string, DocumentClient.AttributeValue> = {};
+
+    for (const [key, value] of Object.entries(updateVals)) {
+      expression += ` #${key} = :${key},`;
+      attributeNames[`#${key}`] = key;
+      attibuteValues[`:${key}`] = value;
+    }
+
+    // remove the trailing comma
+    expression = expression.slice(0, expression.length - 1);
+
+    return {
+      UpdateExpression: expression,
+      ExpressionAttributeNames: attributeNames,
+      ExpressionAttributeValues: attibuteValues,
+    };
   }
 }

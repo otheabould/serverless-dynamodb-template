@@ -1,6 +1,6 @@
 import type { AWS } from "@serverless/typescript";
 
-import { createTodo, getTodo } from "@handlers/index";
+import { createTodo, getTodo, updateTodo } from "@handlers/index";
 
 const serverlessConfiguration: AWS = {
   service: "serverless-template",
@@ -35,7 +35,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { createTodo, getTodo },
+  functions: { createTodo, getTodo, updateTodo },
 
   params: {
     default: {
