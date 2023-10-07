@@ -11,16 +11,12 @@ import { newTodoResponse } from "@entities/Todo";
 import { schema, SchemaBody } from "./schema";
 import updateTodo from "@db/updateTodo";
 import getTodo from "@db/getTodo";
-import logger from "@utils/logger";
-
-const log = logger(__filename);
 
 const handler: ValidatedHttpApiHandler<SchemaBody> = async (event) => {
   const db = new DynamodbAdapter(process.env.region, process.env.tableName);
   const { id } = event.pathParameters;
 
   const existingTodo = await getTodo(db, id);
-  log({ existingTodo, id });
   if (!existingTodo) {
     return apiResponses._404("Todo not found.");
   }
