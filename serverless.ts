@@ -3,7 +3,7 @@ import type { AWS } from "@serverless/typescript";
 import { createTodo, getTodo, updateTodo, deleteTodo } from "@handlers/index";
 
 const serverlessConfiguration: AWS = {
-  service: "serverless-template",
+  service: "serverless-dynamodb-template",
   frameworkVersion: "3",
   plugins: [
     "serverless-iam-roles-per-function",
