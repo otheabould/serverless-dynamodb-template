@@ -14,7 +14,7 @@ export const schema = {
     body: {
       type: "object",
       properties: {
-        title: { type: "string" },
+        title: { type: "string", minLength: 1 },
         status: {
           enum: [TodoStatus.Ready, TodoStatus.InProgress, TodoStatus.Complete],
         },
