@@ -10,6 +10,7 @@ const sharedConfig: JestConfigWithTsJest = {
     "^@handlers/(.*)$": "<rootDir>/src/handlers/$1",
     "^@entities/(.*)$": "<rootDir>/src/entities/$1",
     "^@db/(.*)$": "<rootDir>/src/db/$1",
+    "^@testHelpers/(.*)$": "<rootDir>/__tests__/_testHelpers/$1",
   },
 };
 

@@ -1,47 +1,23 @@
-import { Todo, TodoResponse, TodoStatus } from "@entities/Todo";
-import createTodo from "@db/createTodo";
-import { generateID } from "@handlers/createTodo/factory";
-import DynamodbAdapter from "@utils/DynamodbAdapter";
+import { TodoResponse } from "@entities/Todo";
 import axios from "axios";
+import createTestTodo from "@testHelpers/createTestTodo";
 
-const baseURL = `https://${process.env.httpApiGatewayEndpointId}.execute-api.${process.env.region}.amazonaws.com`;
+import { API_BASE } from "@testHelpers/config";
 
 describe("getTodo handler", () => {
   it("should respond with statusCode 200 to correct request", async () => {
-    const db = new DynamodbAdapter(process.env.region, process.env.tableName);
+    const todo = await createTestTodo("a title");
 
-    const now = Date.now();
-    const id = generateID(now);
-
-    const todo: Todo = {
-      id: id,
-      createdAt: now,
-      status: TodoStatus.Ready,
-      title: "hello",
-    };
-
-    await createTodo(db, todo);
-
-    const actual = await axios.get<TodoResponse>(`${baseURL}/${id}`);
+    const actual = await axios.get<TodoResponse>(`${API_BASE}/${todo.id}`);
     expect(actual.status).toBe(200);
   });
 
   it("should respond with the correct todo", async () => {
-    const db = new DynamodbAdapter(process.env.region, process.env.tableName);
+    const todo = await createTestTodo("a title");
 
-    const now = Date.now();
-    const id = generateID(now);
-
-    const todo: Todo = {
-      id: id,
-      createdAt: now,
-      status: TodoStatus.Ready,
-      title: "hello",
-    };
-
-    await createTodo(db, todo);
-
-    const { data: actual } = await axios.get<TodoResponse>(`${baseURL}/${id}`);
+    const { data: actual } = await axios.get<TodoResponse>(
+      `${API_BASE}/${todo.id}`,
+    );
 
     expect(actual.title).toBe(todo.title);
     expect(actual.status).toBe(todo.status);
@@ -52,7 +28,7 @@ describe("getTodo handler", () => {
     let actual;
     try {
       const fakeID = "sadfasdfasdf";
-      await axios.get(`${baseURL}/${fakeID}`);
+      await axios.get(`${API_BASE}/${fakeID}`);
     } catch (e) {
       actual = e.response;
     }

@@ -1,50 +1,25 @@
-import { Todo, TodoStatus } from "@entities/Todo";
-import createTodo from "@db/createTodo";
-import { generateID } from "@handlers/createTodo/factory";
 import DynamodbAdapter from "@utils/DynamodbAdapter";
 import axios from "axios";
 import getTodo from "@db/getTodo";
 
-const baseURL = `https://${process.env.httpApiGatewayEndpointId}.execute-api.${process.env.region}.amazonaws.com`;
+import createTestTodo from "@testHelpers/createTestTodo";
+import { API_BASE } from "@testHelpers/config";
 
 describe("deleteTodo handler", () => {
   it("should respond with statusCode 200 to correct request", async () => {
-    const db = new DynamodbAdapter(process.env.region, process.env.tableName);
+    const todo = await createTestTodo("a title");
 
-    const now = Date.now();
-    const id = generateID(now);
-
-    const todo: Todo = {
-      id: id,
-      createdAt: now,
-      status: TodoStatus.Ready,
-      title: "hello",
-    };
-
-    await createTodo(db, todo);
-
-    const actual = await axios.delete(`${baseURL}/${id}`);
+    const actual = await axios.delete(`${API_BASE}/${todo.id}`);
     expect(actual.status).toBe(200);
   });
 
   it("should successfully delete a todo", async () => {
     const db = new DynamodbAdapter(process.env.region, process.env.tableName);
 
-    const now = Date.now();
-    const id = generateID(now);
+    const todo = await createTestTodo("a title");
+    await axios.delete(`${API_BASE}/${todo.id}`);
 
-    const todo: Todo = {
-      id: id,
-      createdAt: now,
-      status: TodoStatus.Ready,
-      title: "hello",
-    };
-
-    await createTodo(db, todo);
-
-    await axios.delete(`${baseURL}/${id}`);
-
-    const actual = await getTodo(db, id);
+    const actual = await getTodo(db, todo.id);
     expect(actual).toBe(undefined);
   });
 
@@ -52,7 +27,7 @@ describe("deleteTodo handler", () => {
     let actual;
     try {
       const fakeID = "sadfasdfasdf";
-      await axios.delete(`${baseURL}/${fakeID}`);
+      await axios.delete(`${API_BASE}/${fakeID}`);
     } catch (e) {
       actual = e.response;
     }

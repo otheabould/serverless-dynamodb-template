@@ -5,7 +5,8 @@
       "@handlers/*": ["src/handlers/*"],
       "@utils/*": ["src/utils/*"],
       "@entities/*": ["src/entities/*"],
-      "@db/*": ["src/db/*"]
+      "@db/*": ["src/db/*"],
+      "@testHelpers/*": ["__tests__/_testHelpers/*"],
     }
   }
 }

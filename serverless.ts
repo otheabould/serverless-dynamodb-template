@@ -39,6 +39,7 @@ const serverlessConfiguration: AWS = {
 
   params: {
     default: {
+      httpApiGatewayEndpointId: "${Ref HttpApi}",
       dynamodbTable: "${self:service}-${self:provider.stage}",
       dynamodbArn: {
         "Fn::GetAtt": ["DynamoDb", "Arn"],

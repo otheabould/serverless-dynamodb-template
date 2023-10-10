@@ -1,8 +1,8 @@
-import { TodoResponse, TodoStatus } from "@entities/Todo";
-import { SchemaBody } from "@handlers/createTodo/schema";
 import axios from "axios";
 
-const baseURL = `https://${process.env.httpApiGatewayEndpointId}.execute-api.${process.env.region}.amazonaws.com`;
+import { TodoResponse, TodoStatus } from "@entities/Todo";
+import { SchemaBody } from "@handlers/createTodo/schema";
+import { API_BASE } from "@testHelpers/config";
 
 describe("createTodo handler", () => {
   it("should respond with statusCode 200 to correct request", async () => {
@@ -12,7 +12,7 @@ describe("createTodo handler", () => {
       status: TodoStatus.InProgress,
     };
     // WHEN
-    const actual = await axios.post(`${baseURL}`, payload);
+    const actual = await axios.post(`${API_BASE}`, payload);
 
     // THEN
     expect(actual.status).toBe(200);
@@ -25,7 +25,7 @@ describe("createTodo handler", () => {
       status: TodoStatus.InProgress,
     };
     // WHEN
-    const response = await axios.post<TodoResponse>(`${baseURL}`, payload);
+    const response = await axios.post<TodoResponse>(`${API_BASE}`, payload);
     const actual = response.data;
 
     // THEN
@@ -41,7 +41,7 @@ describe("createTodo handler", () => {
     // WHEN
     let actual;
     try {
-      await axios.post(`${baseURL}`, wrongPayload);
+      await axios.post(`${API_BASE}`, wrongPayload);
     } catch (e) {
       actual = e.response;
     }
